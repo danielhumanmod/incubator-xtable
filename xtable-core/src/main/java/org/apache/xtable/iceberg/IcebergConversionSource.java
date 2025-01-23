@@ -132,13 +132,21 @@ public class IcebergConversionSource implements ConversionSource<Snapshot> {
   }
 
   @Override
+  public InternalTable getCurrentTable() {
+    Table iceTable = getSourceTable();
+    Snapshot currentSnapshot = iceTable.currentSnapshot();
+    return getTable(currentSnapshot);
+  }
+
+  @Override
   public InternalSnapshot getCurrentSnapshot() {
     Table iceTable = getSourceTable();
 
     Snapshot currentSnapshot = iceTable.currentSnapshot();
     InternalTable irTable = getTable(currentSnapshot);
 
-    TableScan scan = iceTable.newScan().useSnapshot(currentSnapshot.snapshotId());
+    TableScan scan =
+        iceTable.newScan().useSnapshot(currentSnapshot.snapshotId()).includeColumnStats();
     PartitionSpec partitionSpec = iceTable.spec();
     List<PartitionFileGroup> partitionedDataFiles;
     try (CloseableIterable<FileScanTask> files = scan.planFiles()) {
