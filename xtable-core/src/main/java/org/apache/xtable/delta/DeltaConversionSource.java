@@ -164,7 +164,10 @@ public class DeltaConversionSource implements ConversionSource<Long> {
     }
 
     DataFilesDiff dataFilesDiff =
-        DataFilesDiff.builder().filesAdded(addedFiles).filesRemoved(removedFiles).build();
+        DataFilesDiff.builder()
+            .filesAdded(addedFiles.values())
+            .filesRemoved(removedFiles.values())
+            .build();
     return TableChange.builder()
         .tableAsOfChange(tableAtVersion)
         .filesDiff(dataFilesDiff)
