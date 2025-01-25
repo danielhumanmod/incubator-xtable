@@ -156,8 +156,9 @@ public class TestConversionController {
     when(mockConversionSource.getCommitsBacklog(instantsForIncrementalSync))
         .thenReturn(commitsBacklog);
     List<TableChange> tableChanges = new ArrayList<>();
-    for (Instant instant : instantsToProcess) {
-      TableChange tableChange = getTableChange(instant);
+    for (int i = 0; i < instantsToProcess.size(); i++) {
+      Instant instant = instantsToProcess.get(i);
+      TableChange tableChange = getTableChange(instant, String.valueOf(i));
       tableChanges.add(tableChange);
       when(mockConversionSource.getTableChangeForCommit(instant)).thenReturn(tableChange);
     }
@@ -287,8 +288,9 @@ public class TestConversionController {
     when(mockConversionSource.getCommitsBacklog(instantsForIncrementalSync))
         .thenReturn(commitsBacklog);
     List<TableChange> tableChanges = new ArrayList<>();
-    for (Instant instant : instantsToProcess) {
-      TableChange tableChange = getTableChange(instant);
+    for (int i = 0; i < instantsToProcess.size(); i++) {
+      Instant instant = instantsToProcess.get(i);
+      TableChange tableChange = getTableChange(instant, String.valueOf(i));
       tableChanges.add(tableChange);
       when(mockConversionSource.getTableChangeForCommit(instant)).thenReturn(tableChange);
     }
@@ -393,8 +395,11 @@ public class TestConversionController {
         .collect(Collectors.toList());
   }
 
-  private TableChange getTableChange(Instant instant) {
-    return TableChange.builder().tableAsOfChange(getInternalTable(instant)).build();
+  private TableChange getTableChange(Instant instant, String sourceIdentifier) {
+    return TableChange.builder()
+        .tableAsOfChange(getInternalTable(instant))
+        .sourceIdentifier(sourceIdentifier)
+        .build();
   }
 
   private SyncResult buildSyncResult(SyncMode syncMode, Instant lastSyncedInstant) {
