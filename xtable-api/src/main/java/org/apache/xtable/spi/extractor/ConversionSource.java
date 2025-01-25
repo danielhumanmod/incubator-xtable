@@ -89,11 +89,16 @@ public interface ConversionSource<COMMIT> extends Closeable {
   boolean isIncrementalSyncSafeFrom(Instant instant);
 
   /**
-   * Extract the identifier of the provided commit, the identifier defined as 1. Snapshot ID in
-   * Iceberg 2. Version ID in Delta 3. timestamp in Hudi
+   * Extract the identifier of the provided commit. The identifier is defined as:
+   *
+   * <ul>
+   *   <li>Snapshot ID in Iceberg
+   *   <li>Version ID in Delta
+   *   <li>Timestamp in Hudi
+   * </ul>
    *
    * @param commit The provided commit
-   * @return the string version of commit identifier
+   * @return the string version of the commit identifier
    */
   String getCommitIdentifier(COMMIT commit);
 }

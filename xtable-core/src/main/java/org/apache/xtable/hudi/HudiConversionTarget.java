@@ -61,6 +61,7 @@ import org.apache.hudi.common.table.timeline.HoodieActiveTimeline;
 import org.apache.hudi.common.table.timeline.HoodieInstant;
 import org.apache.hudi.common.table.timeline.HoodieTimeline;
 import org.apache.hudi.common.table.timeline.TimelineMetadataUtils;
+import org.apache.hudi.common.table.timeline.TimelineUtils;
 import org.apache.hudi.common.table.view.TableFileSystemView;
 import org.apache.hudi.common.util.CleanerUtils;
 import org.apache.hudi.common.util.ExternalFilePathUtil;
@@ -317,7 +318,7 @@ public class HudiConversionTarget implements ConversionTarget {
 
         TableSyncMetadata metadata = optionalMetadata.get();
         if (sourceIdentifier.equals(metadata.getSourceIdentifier())) {
-          return Optional.of(String.valueOf(instant.getTimestamp()));
+          return Optional.of(instant.getTimestamp());
         }
       } catch (Exception e) {
         log.warn("Failed to parse commit metadata for instant: {}", instant, e);
