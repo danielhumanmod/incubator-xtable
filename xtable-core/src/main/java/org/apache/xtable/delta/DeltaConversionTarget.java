@@ -330,6 +330,7 @@ public class DeltaConversionTarget implements ConversionTarget {
       Map<String, String> configMap = new HashMap<>();
       configMap.put(DeltaConfigs.MIN_READER_VERSION().key(), MIN_READER_VERSION);
       configMap.put(DeltaConfigs.MIN_WRITER_VERSION().key(), MIN_WRITER_VERSION);
+      configMap.put(TableSyncMetadata.XTABLE_METADATA, metadata.toJson());
       // Sets retention for the Delta Log, does not impact underlying files in the table
       configMap.put(
           DeltaConfigs.LOG_RETENTION().key(), String.format("interval %d hours", retentionInHours));
@@ -360,9 +361,7 @@ public class DeltaConversionTarget implements ConversionTarget {
     }
 
     private Map<String, String> getCommitTags() {
-      Map<String, String> tags = new HashMap<>();
-      tags.put(TableSyncMetadata.XTABLE_METADATA, metadata.toJson());
-      return tags;
+      return Collections.singletonMap(TableSyncMetadata.XTABLE_METADATA, metadata.toJson());
     }
   }
 }

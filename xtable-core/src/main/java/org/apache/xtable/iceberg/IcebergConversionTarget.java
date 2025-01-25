@@ -179,6 +179,7 @@ public class IcebergConversionTarget implements ConversionTarget {
     tableSyncMetadata = metadata;
 
     UpdateProperties updateProperties = transaction.updateProperties();
+    updateProperties.set(TableSyncMetadata.XTABLE_METADATA, metadata.toJson());
     if (!table.properties().containsKey(TableProperties.WRITE_DATA_LOCATION)) {
       // Required for a consistent write location when writing back to the table as Iceberg
       updateProperties.set(TableProperties.WRITE_DATA_LOCATION, basePath);
