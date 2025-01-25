@@ -54,7 +54,6 @@ import org.apache.hudi.common.model.HoodieBaseFile;
 import org.apache.hudi.common.model.HoodieCleaningPolicy;
 import org.apache.hudi.common.model.HoodieCommitMetadata;
 import org.apache.hudi.common.model.HoodieFileGroup;
-import org.apache.hudi.common.model.HoodieReplaceCommitMetadata;
 import org.apache.hudi.common.table.HoodieTableMetaClient;
 import org.apache.hudi.common.table.TableSchemaResolver;
 import org.apache.hudi.common.table.timeline.HoodieActiveTimeline;
@@ -335,27 +334,10 @@ public class HudiConversionTarget implements ConversionTarget {
   private Optional<TableSyncMetadata> getMetadata(
       HoodieInstant instant, HoodieTableMetaClient metaClient) {
     try {
-      // Get instant details
-      Option<byte[]> instantDetails = metaClient.getActiveTimeline().getInstantDetails(instant);
-      if (!instantDetails.isPresent()) {
-        return Optional.empty();
-      }
-
-      // Check action and parse the appropriate metadata
-      Map<String, String> extraMetadata;
-      if (instant.getAction().equals(HoodieTimeline.REPLACE_COMMIT_ACTION)) {
-        HoodieReplaceCommitMetadata replaceCommitMetadata =
-            HoodieReplaceCommitMetadata.fromBytes(
-                instantDetails.get(), HoodieReplaceCommitMetadata.class);
-        extraMetadata = replaceCommitMetadata.getExtraMetadata();
-      } else {
-        HoodieCommitMetadata commitMetadata =
-            HoodieCommitMetadata.fromBytes(instantDetails.get(), HoodieCommitMetadata.class);
-        extraMetadata = commitMetadata.getExtraMetadata();
-      }
-
-      // Extract and transform to TableSyncMetadata
-      String sourceMetadataJson = extraMetadata.get(TableSyncMetadata.XTABLE_METADATA);
+      HoodieCommitMetadata commitMetadata =
+          TimelineUtils.getCommitMetadata(instant, metaClient.getActiveTimeline());
+      String sourceMetadataJson =
+          commitMetadata.getExtraMetadata().get(TableSyncMetadata.XTABLE_METADATA);
       return TableSyncMetadata.fromJson(sourceMetadataJson);
     } catch (Exception e) {
       log.warn("Failed to parse commit metadata for instant: {}", instant, e);
